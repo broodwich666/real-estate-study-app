@@ -52,3 +52,9 @@ $('indexSearch').oninput=renderIndex;$('indexChapterFilter').onchange=renderInde
 window.addEventListener('beforeunload',autosave);
 renderAll();
 })();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
