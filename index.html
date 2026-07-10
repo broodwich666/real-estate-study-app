@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Real Estate Flash Cards</title>
+<style>
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f5f5f7;
+  color:#111;
+}
+.app {
+  max-width:500px;
+  margin:0 auto;
+  min-height:100vh;
+  padding:16px 16px 90px;
+}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0 18px;
+}
+h1 { font-size:28px; margin:0 0 16px; }
+h2 { font-size:20px; }
+button {
+  border:0;
+  border-radius:14px;
+  padding:12px 14px;
+  background:#10a37f;
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
+}
+.secondary {
+  background:#fff;
+  color:#111;
+  border:1px solid #ddd;
+}
+.card, .chapter, .note {
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+.chapter {
+  cursor:pointer;
+}
+.chapter small {
+  color:#666;
+}
+.screen {
+  display:none;
+}
+.screen.active {
+  display:block;
+}
+.flashcard {
+  width:100%;
+  min-height:330px;
+  background:#fff;
+  color:#111;
+  border:1px solid #ddd;
+  border-radius:24px;
+  padding:24px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+.flashcard .label {
+  color:#10a37f;
+  font-weight:800;
+}
+.flashcard .text {
+  font-size:25px;
+  font-weight:800;
+  line-height:1.25;
+}
+.flashcard .hint {
+  text-align:center;
+  color:#777;
+  font-size:13px;
+}
+.row {
+  display:flex;
+  gap:10px;
+}
+.row > * {
+  flex:1;
+}
+input, textarea {
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #ccc;
+  font:inherit;
+  margin-bottom:12px;
+}
+textarea {
+  min-height:55vh;
+}
+nav {
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:500px;
+  background:#fff;
+  border-top:1px solid #ddd;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  padding:8px 0 10px;
+}
+nav button {
+  background:transparent;
+  color:#666;
+  padding:8px 2px;
+  border-radius:10px;
+}
+nav button.active {
+  color:#10a37f;
+  background:#ecfdf5;
+}
+nav span {
+  display:block;
+  font-size:11px;
+}
+.note {
+  background:#fff8c5;
+}
+.small {
+  color:#666;
+  font-size:13px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="small">NY Real Estate</div>
+    <strong>Study App</strong>
+  </div>
+</header>
+
+<section id="home" class="screen active">
+  <h1>Chapters</h1>
+  <button style="width:100%;margin-bottom:16px" onclick="startStudyAll()">Study All</button>
+  <div id="chapterList"></div>
+</section>
+
+<section id="study" class="screen">
+  <div class="row" style="margin-bottom:12px">
+    <button class="secondary" onclick="prevCard()">←</button>
+    <button class="secondary" onclick="nextCard()">→</button>
+  </div>
+  <div class="small" id="studyMeta"></div>
+  <button class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="label" id="cardSide">Question</div>
+    <div class="text" id="cardText"></div>
+    <div class="hint">Tap card to flip</div>
+  </button>
+  <div class="row" style="margin-top:12px">
+    <button class="secondary" onclick="markPractice()">Need Practice</button>
+    <button onclick="markKnown()">Know It</button>
+  </div>
+</section>
+
+<section id="notes" class="screen">
+  <div class="row" style="align-items:center">
+    <h1 style="flex:1">Notes</h1>
+    <button onclick="newNote()">New Note</button>
+  </div>
+  <input id="noteSearch" placeholder="Search notes" oninput="renderNotes()">
+  <div id="notesList"></div>
+</section>
+
+<section id="editor" class="screen">
+  <div class="row">
+    <button class="secondary" onclick="saveNote();showScreen('notes')">Back</button>
+    <button onclick="saveNote()">Save</button>
+  </div>
+  <input id="noteTitle" placeholder="Title">
+  <textarea id="noteBody" placeholder="Paste notes here"></textarea>
+  <button style="width:100%;background:#d33" onclick="deleteNote()">Delete Note</button>
+</section>
+
+<section id="search" class="screen">
+  <h1>Search</h1>
+  <input id="searchBox" placeholder="Search flashcards and notes" oninput="renderSearch()">
+  <div id="searchResults"></div>
+</section>
+
+<nav>
+  <button id="navHome" class="active" onclick="showScreen('home')">⌂<span>Home</span></button>
+  <button id="navStudy" onclick="showScreen('study')">▣<span>Study</span></button>
+  <button id="navNotes" onclick="showScreen('notes')">📝<span>Notes</span></button>
+  <button id="navSearch" onclick="showScreen('search')">⌕<span>Search</span></button>
+</nav>
+</div>
+
+<script>
+var STARTER = {"chapters": [{"title": "Chapter 1 – License Law", "cards": [{"q": "Who issues NY real estate licenses?", "a": "NYS Department of State."}, {"q": "What article governs NY licensing?", "a": "Article 12-A."}, {"q": "Minimum age for a salesperson?", "a": "18 years old."}, {"q": "Continuing education requirement?", "a": "22.5 hours."}]}, {"title": "Chapter 2 – Law of Agency", "cards": [{"q": "What does OLD CAR stand for?", "a": "Obedience, Loyalty, Disclosure, Confidentiality, Accountability, Reasonable Care."}, {"q": "When is agency disclosure presented?", "a": "At first substantive contact."}, {"q": "Is undisclosed dual agency legal?", "a": "No."}]}, {"title": "Chapter 3 – Legal Issues", "cards": [{"q": "Personal property is also called what?", "a": "Chattel."}, {"q": "What is an easement?", "a": "The right to use another person's property for a specified purpose."}, {"q": "Who is the grantor?", "a": "The seller or person conveying the deed."}, {"q": "Who is the grantee?", "a": "The buyer or person receiving the deed."}]}, {"title": "Chapter 4 – Contracts and Leases", "cards": [{"q": "Minimum age to enter a contract in NY?", "a": "18 years old."}, {"q": "A contract signed by a minor is what?", "a": "Voidable."}, {"q": "What is proration?", "a": "The division of settlement costs between buyer and seller."}]}, {"title": "Chapter 5 – Real Estate Finance", "cards": [{"q": "Who is the mortgagor?", "a": "The borrower."}, {"q": "Who is the mortgagee?", "a": "The lender."}, {"q": "One point equals what?", "a": "1% of the loan amount."}]}, {"title": "Glossary", "cards": [{"q": "Acre", "a": "43,560 square feet."}, {"q": "Chattel", "a": "Personal property."}, {"q": "Lien", "a": "A claim against property until a debt is satisfied."}]}], "notes": []};
+var state;
+try {
+  state = JSON.parse(localStorage.getItem('re_simple_phone_v1')) || STARTER;
+} catch (e) {
+  state = STARTER;
+}
+var studyCards = [];
+var cardIndex = 0;
+var showingAnswer = false;
+var currentNoteId = null;
+
+function saveState() {
+  localStorage.setItem('re_simple_phone_v1', JSON.stringify(state));
+}
+
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i=0;i<screens.length;i++) {
+    screens[i].classList.remove('active');
+  }
+  document.getElementById(id).classList.add('active');
+
+  var navs = ['navHome','navStudy','navNotes','navSearch'];
+  for (var j=0;j<navs.length;j++) {
+    document.getElementById(navs[j]).classList.remove('active');
+  }
+  if (id==='home') document.getElementById('navHome').classList.add('active');
+  if (id==='study') document.getElementById('navStudy').classList.add('active');
+  if (id==='notes' || id==='editor') document.getElementById('navNotes').classList.add('active');
+  if (id==='search') document.getElementById('navSearch').classList.add('active');
+
+  renderAll();
+}
+
+function getAllCards() {
+  var out = [];
+  for (var i=0;i<state.chapters.length;i++) {
+    var ch = state.chapters[i];
+    for (var j=0;j<ch.cards.length;j++) {
+      var c = ch.cards[j];
+      out.push({
+        chapterIndex:i,
+        cardIndex:j,
+        chapterTitle:ch.title,
+        q:c.q,
+        a:c.a,
+        known:c.known || false,
+        practice:c.practice || false
+      });
+    }
+  }
+  return out;
+}
+
+function renderChapters() {
+  var box = document.getElementById('chapterList');
+  var html = '';
+  for (var i=0;i<state.chapters.length;i++) {
+    var ch = state.chapters[i];
+    var known = 0;
+    for (var j=0;j<ch.cards.length;j++) {
+      if (ch.cards[j].known) known++;
+    }
+    html += '<div class="chapter" onclick="startChapter('+i+')">';
+    html += '<strong>'+escapeHtml(ch.title)+'</strong>';
+    html += '<div><small>'+ch.cards.length+' cards • '+known+'/'+ch.cards.length+' known</small></div>';
+    html += '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function startChapter(index) {
+  studyCards = [];
+  var ch = state.chapters[index];
+  for (var i=0;i<ch.cards.length;i++) {
+    studyCards.push({
+      chapterIndex:index,
+      cardIndex:i,
+      chapterTitle:ch.title,
+      q:ch.cards[i].q,
+      a:ch.cards[i].a
+    });
+  }
+  cardIndex = 0;
+  showingAnswer = false;
+  showScreen('study');
+}
+
+function startStudyAll() {
+  studyCards = getAllCards();
+  cardIndex = 0;
+  showingAnswer = false;
+  showScreen('study');
+}
+
+function renderStudy() {
+  if (!studyCards.length) {
+    studyCards = getAllCards();
+  }
+  if (!studyCards.length) return;
+  if (cardIndex >= studyCards.length) cardIndex = 0;
+  var c = studyCards[cardIndex];
+  document.getElementById('studyMeta').textContent = c.chapterTitle + ' • ' + (cardIndex+1) + ' of ' + studyCards.length;
+  document.getElementById('cardSide').textContent = showingAnswer ? 'Answer' : 'Question';
+  document.getElementById('cardText').textContent = showingAnswer ? c.a : c.q;
+}
+
+function flipCard() {
+  showingAnswer = !showingAnswer;
+  renderStudy();
+}
+
+function nextCard() {
+  if (!studyCards.length) return;
+  cardIndex = (cardIndex + 1) % studyCards.length;
+  showingAnswer = false;
+  renderStudy();
+}
+
+function prevCard() {
+  if (!studyCards.length) return;
+  cardIndex = (cardIndex - 1 + studyCards.length) % studyCards.length;
+  showingAnswer = false;
+  renderStudy();
+}
+
+function markKnown() {
+  var c = studyCards[cardIndex];
+  state.chapters[c.chapterIndex].cards[c.cardIndex].known = true;
+  state.chapters[c.chapterIndex].cards[c.cardIndex].practice = false;
+  saveState();
+  nextCard();
+}
+
+function markPractice() {
+  var c = studyCards[cardIndex];
+  state.chapters[c.chapterIndex].cards[c.cardIndex].known = false;
+  state.chapters[c.chapterIndex].cards[c.cardIndex].practice = true;
+  saveState();
+  nextCard();
+}
+
+function newNote() {
+  var note = {
+    id: 'n' + new Date().getTime(),
+    title: 'Untitled Note',
+    body: '',
+    updated: new Date().toLocaleString()
+  };
+  state.notes.unshift(note);
+  currentNoteId = note.id;
+  saveState();
+  openNote(note.id);
+}
+
+function openNote(id) {
+  currentNoteId = id;
+  var note = null;
+  for (var i=0;i<state.notes.length;i++) {
+    if (state.notes[i].id === id) note = state.notes[i];
+  }
+  if (!note) return;
+  document.getElementById('noteTitle').value = note.title;
+  document.getElementById('noteBody').value = note.body;
+  showScreen('editor');
+}
+
+function saveNote() {
+  if (!currentNoteId) return;
+  for (var i=0;i<state.notes.length;i++) {
+    if (state.notes[i].id === currentNoteId) {
+      state.notes[i].title = document.getElementById('noteTitle').value || 'Untitled Note';
+      state.notes[i].body = document.getElementById('noteBody').value;
+      state.notes[i].updated = new Date().toLocaleString();
+    }
+  }
+  saveState();
+  renderNotes();
+}
+
+function deleteNote() {
+  if (!currentNoteId) return;
+  if (!confirm('Delete this note?')) return;
+  var next = [];
+  for (var i=0;i<state.notes.length;i++) {
+    if (state.notes[i].id !== currentNoteId) next.push(state.notes[i]);
+  }
+  state.notes = next;
+  currentNoteId = null;
+  saveState();
+  showScreen('notes');
+}
+
+function renderNotes() {
+  var q = (document.getElementById('noteSearch').value || '').toLowerCase();
+  var html = '';
+  for (var i=0;i<state.notes.length;i++) {
+    var n = state.notes[i];
+    if (!q || (n.title + ' ' + n.body).toLowerCase().indexOf(q) !== -1) {
+      html += '<div class="note" onclick="openNote(\''+n.id+'\')">';
+      html += '<strong>'+escapeHtml(n.title)+'</strong>';
+      html += '<p>'+escapeHtml(n.body || 'No text yet')+'</p>';
+      html += '<div class="small">'+escapeHtml(n.updated)+'</div>';
+      html += '</div>';
+    }
+  }
+  if (!html) html = '<p>No notes yet.</p>';
+  document.getElementById('notesList').innerHTML = html;
+}
+
+function renderSearch() {
+  var q = (document.getElementById('searchBox').value || '').toLowerCase();
+  var html = '';
+  if (!q) {
+    document.getElementById('searchResults').innerHTML = '<p>Search flashcards and notes.</p>';
+    return;
+  }
+  var cards = getAllCards();
+  for (var i=0;i<cards.length;i++) {
+    var c = cards[i];
+    if ((c.chapterTitle+' '+c.q+' '+c.a).toLowerCase().indexOf(q) !== -1) {
+      html += '<div class="card"><div class="small">'+escapeHtml(c.chapterTitle)+'</div><strong>'+escapeHtml(c.q)+'</strong><p>'+escapeHtml(c.a)+'</p></div>';
+    }
+  }
+  for (var j=0;j<state.notes.length;j++) {
+    var n = state.notes[j];
+    if ((n.title+' '+n.body).toLowerCase().indexOf(q) !== -1) {
+      html += '<div class="note" onclick="openNote(\''+n.id+'\')"><strong>'+escapeHtml(n.title)+'</strong><p>'+escapeHtml(n.body)+'</p></div>';
+    }
+  }
+  document.getElementById('searchResults').innerHTML = html || '<p>No results.</p>';
+}
+
+function renderAll() {
+  renderChapters();
+  renderStudy();
+  renderNotes();
+  renderSearch();
+}
+
+function escapeHtml(text) {
+  return String(text || '').replace(/[&<>"']/g, function(m) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];
+  });
+}
+
+window.addEventListener('beforeunload', saveNote);
+renderAll();
+</script>
+</body>
+</html>
