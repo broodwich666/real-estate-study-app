@@ -1,134 +1,46 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#f2f2f7">
-<link rel="apple-touch-icon" href="icon-180.png">
-<meta name="apple-mobile-web-app-title" content="REFLASHAPP">
-<title>Zad's REFLASHAPP</title>
-<link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<div id="app">
-<header class="topbar">
-  <div>
-    <div class="eyebrow">Zad’s REFLASHAPP</div>
-    <h1 id="pageTitle">Notes</h1>
-  </div>
-  <button id="newNoteTop" class="iconButton">✎</button>
-</header>
-
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#07101d">
+<title>Zad's REFLASHAPP — Work Mode</title><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="styles.css">
+</head><body><div id="app">
+<header><div><div class="eyebrow">Zad’s REFLASHAPP</div><h1 id="pageTitle">Work Mode</h1></div><button id="addButton" class="iconButton">＋</button></header>
 <main>
-<section id="notesScreen" class="screen active">
-  <div class="searchWrap"><input id="notesSearch" type="search" placeholder="Search Notes"></div>
-  <div class="folderTabs">
-    <button class="folderTab active" data-folder="all">All Notes</button>
-    <button class="folderTab" data-folder="course">Course Notes</button>
-    <button class="folderTab" data-folder="personal">Personal Notes</button>
-  </div>
-  <button class="newNoteButton" id="newNoteButton">＋ New Note</button>
-  <div id="notesList"></div>
-</section>
-
-<section id="editorScreen" class="screen">
-  <div class="editorToolbar">
-    <button id="backToNotes" class="textButton">‹ Notes</button>
-    <span id="saveStatus">Saved</span>
-  </div>
-  <select id="noteFolder">
-    <option value="personal">Personal Notes</option>
-  </select>
-  <input id="noteTitle" class="noteTitleInput" placeholder="Title">
-  <textarea id="noteBody" class="noteBodyInput" placeholder="Start typing or paste your notes…"></textarea>
-  <div class="bottomDoneBar">
-    <button id="doneNote" class="doneButton">Save & Done</button>
-  </div>
-  <button id="deleteNote" class="deleteButton">Delete Note</button>
-</section>
-
-<section id="courseNoteScreen" class="screen">
-  <button id="backFromCourseNote" class="textButton">‹ Notes</button>
-  <h2 id="courseNoteTitle"></h2>
-  <pre id="courseNoteBody"></pre>
-</section>
-
-<section id="chaptersScreen" class="screen">
-  <div class="searchWrap"><input id="chapterSearch" type="search" placeholder="Search Chapters"></div>
-  <div id="chapterList"></div>
-</section>
-
-<section id="chapterScreen" class="screen">
-  <button id="backToChapters" class="textButton">‹ Chapters</button>
-  <h2 id="chapterTitle"></h2>
-  <div class="chapterStats" id="chapterStats"></div>
-  <button id="studyChapter" class="primaryButton">Study This Chapter</button>
-  <button id="viewChapterIndex" class="secondaryButton">View Flashcard Index</button>
-</section>
-
-<section id="studyScreen" class="screen">
-  <div class="studyTop">
-    <button id="prevCard" class="roundButton">‹</button>
-    <div>
-      <div id="studyChapterTitle" class="studyChapterTitle"></div>
-      <div id="studyCounter" class="studyCounter"></div>
-    </div>
-    <button id="nextCard" class="roundButton">›</button>
-  </div>
-  <div class="progress"><i id="studyProgress"></i></div>
-  <button id="flashcard" class="flashcard">
-    <span id="cardSide" class="cardSide">Question</span>
-    <strong id="cardText"></strong>
-    <em>Tap to flip</em>
-  </button>
-  <div class="studyActions">
-    <button id="needPractice" class="secondaryButton">Need Practice</button>
-    <button id="knowIt" class="primaryButton">Know It</button>
-  </div>
-  <button id="favoriteCard" class="secondaryButton full">☆ Favorite</button>
-</section>
-
-<section id="indexScreen" class="screen">
-  <div class="searchWrap"><input id="indexSearch" type="search" placeholder="Search Flashcards"></div>
-  <select id="indexChapterFilter"></select>
-  <div id="indexList"></div>
-</section>
-
-<section id="dashboardScreen" class="screen">
-  <div class="dashboardGrid">
-    <div class="metric"><span>Chapters</span><b id="metricChapters">19</b></div>
-    <div class="metric"><span>Flashcards</span><b id="metricCards">0</b></div>
-    <div class="metric"><span>Known</span><b id="metricKnown">0</b></div>
-    <div class="metric"><span>Need Practice</span><b id="metricPractice">0</b></div>
-  </div>
-  <div class="dashboardCard">
-    <h2>Study Progress</h2>
-    <div class="progress large"><i id="overallProgress"></i></div>
-    <p id="overallProgressText"></p>
-  </div>
-  <button id="studyAll" class="primaryButton">Study All Chapters</button>
-  <button id="studyPractice" class="secondaryButton">Study Need Practice</button>
-  <button id="studyFavorites" class="secondaryButton">Study Favorites</button>
-</section>
-
-<section id="searchScreen" class="screen">
-  <div class="searchWrap"><input id="globalSearch" type="search" placeholder="Search Everything"></div>
-  <div id="globalResults"></div>
-</section>
-</main>
-
-<nav class="tabbar">
-  <button class="tab active" data-screen="notesScreen" data-title="Notes"><span>📝</span><small>Notes</small></button>
-  <button class="tab" data-screen="chaptersScreen" data-title="Chapters"><span>📚</span><small>Chapters</small></button>
-  <button class="tab" data-screen="indexScreen" data-title="Flashcard Index"><span>▤</span><small>Index</small></button>
-  <button class="tab" data-screen="dashboardScreen" data-title="Dashboard"><span>◉</span><small>Progress</small></button>
-  <button class="tab" data-screen="searchScreen" data-title="Search"><span>⌕</span><small>Search</small></button>
-</nav>
+<section id="dashboard" class="screen active">
+<div class="heroCard"><small>Today</small><h2>Real Estate Work Dashboard</h2><p>Manage rentals, residential sales, clients, properties, and showing tasks.</p></div>
+<div class="modeGrid">
+<button class="modeCard" data-mode="rentals"><span>🏢</span><strong>Rentals</strong><small>Leads, applications, leases</small></button>
+<button class="modeCard" data-mode="sales"><span>🏡</span><strong>Residential Sales</strong><small>Buyers, sellers, showings, offers</small></button>
+<button class="modeCard" data-mode="commercial"><span>🏙️</span><strong>Commercial</strong><small>Coming Soon</small></button>
 </div>
-<script src="data.js"></script>
-<script src="app.js"></script>
-</body>
-</html>
+<div class="sectionHeader"><h2>Today’s Checklist</h2><button id="newTaskButton" class="textButton">Add Task</button></div><div id="dailyTasks"></div>
+</section>
+
+<section id="rentals" class="screen"><div class="sectionHeader"><h2>Rentals</h2></div>
+<div class="workflowCard"><h3>Rental Workflow</h3><div class="workflowSteps"><span>Lead</span><span>Documents</span><span>Showing</span><span>Application</span><span>Lease</span><span>Move-in</span></div></div><div id="rentalClients"></div></section>
+
+<section id="sales" class="screen"><div class="sectionHeader"><h2>Residential Sales</h2></div>
+<div class="workflowCard"><h3>Sales Workflow</h3><div class="workflowSteps"><span>Intake</span><span>Pre-approval</span><span>Search</span><span>Showing</span><span>Offer</span><span>Closing</span></div></div><div id="salesClients"></div></section>
+
+<section id="commercial" class="screen"><div class="comingSoon"><div class="bigIcon">🏙️</div><h2>Commercial Workflows</h2><p>Reserved for future commercial leasing, NOI, cap rates, rent rolls, and due diligence.</p></div></section>
+
+<section id="clients" class="screen"><div class="sectionHeader"><h2>Clients</h2><button id="newClientButton" class="textButton">New Client</button></div><input id="clientSearch" class="search" placeholder="Search clients"><div id="clientList"></div></section>
+
+<section id="properties" class="screen"><div class="sectionHeader"><h2>Properties</h2><button id="newPropertyButton" class="textButton">New Property</button></div><input id="propertySearch" class="search" placeholder="Search properties"><div id="propertyList"></div></section>
+
+<section id="clientDetail" class="screen"><button class="backButton" data-back="clients">‹ Clients</button>
+<div class="detailCard"><input id="clientName" class="titleInput" placeholder="Client name"><select id="clientType"><option>Rental</option><option>Residential Sale</option></select><select id="clientStatus"><option>Lead</option><option>Active</option><option>Under Contract</option><option>Closed</option><option>Inactive</option></select><input id="clientPhone" placeholder="Phone"><input id="clientEmail" placeholder="Email"><textarea id="clientNotes" placeholder="Preferences, budget, neighborhoods, requirements..."></textarea><button id="saveClient" class="primaryButton">Save Client</button><button id="deleteClient" class="dangerButton">Delete Client</button></div>
+<div class="sectionHeader"><h2>Client Tasks</h2><button id="addClientTask" class="textButton">Add Task</button></div><div id="clientTasks"></div></section>
+
+<section id="propertyDetail" class="screen"><button class="backButton" data-back="properties">‹ Properties</button>
+<div class="detailCard"><input id="propertyAddress" class="titleInput" placeholder="Property address"><select id="propertyType"><option>Rental</option><option>Residential Sale</option></select><select id="propertyStatus"><option>Research</option><option>Showing</option><option>Offer</option><option>Under Contract</option><option>Closed</option></select><select id="propertyClient"></select><textarea id="propertyNotes" placeholder="Property notes, access instructions, feedback..."></textarea><button id="saveProperty" class="primaryButton">Save Property</button><button id="deleteProperty" class="dangerButton">Delete Property</button></div>
+<div class="sectionHeader"><h2>Showing Checklist</h2><button id="resetShowing" class="textButton">Reset</button></div><div id="showingChecklist"></div></section>
+
+<section id="addMenu" class="screen"><div class="addMenuCard"><h2>Create</h2><button id="addMenuClient">New Client</button><button id="addMenuProperty">New Property</button><button id="addMenuTask">New Daily Task</button></div></section>
+</main>
+<nav>
+<button class="tab active" data-screen="dashboard"><span>⌂</span><small>Today</small></button>
+<button class="tab" data-screen="clients"><span>👤</span><small>Clients</small></button>
+<button class="tab" data-screen="properties"><span>🏠</span><small>Properties</small></button>
+<button class="tab" data-screen="rentals"><span>🏢</span><small>Rentals</small></button>
+<button class="tab" data-screen="sales"><span>🏡</span><small>Sales</small></button>
+</nav></div><script src="data.js"></script><script src="app.js"></script></body></html>
