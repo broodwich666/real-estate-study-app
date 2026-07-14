@@ -1,0 +1,16 @@
+{
+  "name": "Zad's REFLASHAPP",
+  "short_name": "REFLASHAPP",
+  "description": "Study brain and real estate workspace based on Desktop 1.4.0.",
+  "id": "./",
+  "start_url": "./index.html?version=1.4.0-universal",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#17191e",
+  "theme_color": "#17191e",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}

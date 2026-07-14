@@ -1,0 +1,4 @@
+.raw-notes{margin:22px 0;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.raw-notes summary{cursor:pointer;padding:16px;background:var(--surface2);display:flex;justify-content:space-between}
+.raw-notes summary span{color:var(--muted);font-size:12px}
+.raw-notes .note-sheet{line-height:1.7;white-space:pre-wrap;padding:20px;max-height:560px;overflow:auto}

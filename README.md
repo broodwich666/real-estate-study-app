@@ -1,16 +1,14 @@
-# Zad's REFLASHAPP Universal Web 1.4.0
+# Zad's REFLASHAPP Desktop 1.4.0 — Single Source Universal
 
-This is the Desktop 1.4.0 system adapted for desktop browsers, iPhone, and iPad while preserving its layout and features.
+This package keeps the exact Desktop 1.4.0 HTML, CSS, JavaScript, data, and raw notes as the source interface.
 
-## Put it online tonight with the existing GitHub Pages workflow
-1. Unzip this package.
-2. Upload the **contents** of the folder to the root of the GitHub Pages repository.
-3. Replace the older files and commit.
-4. Wait for GitHub Pages to publish.
-5. Open the live link in Safari on iPhone.
-6. Tap **Share > Add to Home Screen**.
+Contents:
+- `web/`: exact Desktop 1.4.0 interface plus responsive/PWA support.
+- `iOS/`: Xcode project modified to load the hosted single source.
+- `macOS/`: SwiftUI/WKWebView wrapper source loading the same URL.
+- `SYNC_AND_RELEASE.md`: precise explanation of app-code updates versus personal-data synchronization.
 
-The responsive version turns the left desktop sidebar into a bottom navigation bar on phones. It supports Home Screen installation and offline caching.
+Configured hosted URL:
+`https://broodwich666.github.io/real-estate-study-app/`
 
-## Local data
-Notes, progress, clients, transactions, tasks, and settings use browser storage. Vault files use IndexedDB. Use Settings > Export local data backup regularly. Removing the Home Screen app or clearing website data may remove local information.
+Edit AppConfig.swift in both wrappers if your actual GitHub Pages URL is different.

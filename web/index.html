@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Zad's REFLASHAPP Desktop</title>
+  <meta name="theme-color" content="#17191e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="REFLASHAPP">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="raw-notes.css"><link rel="stylesheet" href="v1-2.css"><link rel="stylesheet" href="v1-3.css"><link rel="stylesheet" href="v1-4.css"><link rel="stylesheet" href="universal.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">ZR</div><div><strong>Zad's REFLASHAPP</strong><small>Version 1.4.0</small></div></div>
+      <nav id="nav">
+        <button data-view="dashboard" class="active">⌂ <span>Dashboard</span></button>
+        <button data-view="brain">🧠 <span>Brain</span></button>
+        <button data-view="notes">📝 <span>Personal Notes</span></button>
+        <button data-view="work">💼 <span>Work</span></button>
+        <button data-view="vault">▣ <span>Vault</span></button>
+        <button data-view="settings">⚙ <span>Settings</span></button>
+      </nav>
+      <div class="local-badge">● Local-only storage</div>
+    </aside>
+    <main>
+      <header><div><p class="eyebrow" id="eyebrow">OVERVIEW</p><h1 id="pageTitle">Dashboard</h1></div><div class="header-actions"><span id="saveState">Saved locally</span><button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button></div></header>
+      <section id="dashboard" class="view active">
+        <div class="hero"><div><p>Welcome back, Zad</p><h2>Your study brain and real estate workspace, together.</h2></div><button class="primary" data-jump="brain">Continue studying →</button></div>
+        <div class="stats"><article><span>Study progress</span><strong id="overallProgress">0%</strong><small id="masteredCount">0 cards mastered</small></article><article><span>Open work tasks</span><strong id="taskCount">0</strong><small>Across rentals and sales</small></article><article><span>Vault items</span><strong id="vaultCount">0</strong><small>Stored only on this Mac</small></article></div>
+        <div class="two-col"><article class="panel"><div class="panel-head"><h3>Today's agenda</h3><button class="text-btn" data-jump="work">Open Work</button></div><div id="agendaPreview" class="list empty">No tasks yet.</div></article><article class="panel"><div class="panel-head"><h3>Quick study</h3><button class="text-btn" id="quickStudy">Shuffle all</button></div><div id="quickCard" class="mini-card">Choose “Shuffle all” for a flashcard.</div></article></div>
+      </section>
+
+      <section id="brain" class="view">
+        <div class="toolbar"><input id="brainSearch" placeholder="Search chapters, notes, and flashcards…"><button class="primary" id="studyAll">Shuffle & Study All</button><button id="studyFavorites">★ Favorites</button><button id="studyPractice">Review Needed</button><button id="popupBtn">Pop-up cards: Off</button></div>
+        <div class="brain-grid"><aside class="chapter-list panel"><div class="panel-head"><h3>Course library</h3><span>19 chapters</span></div><div id="chapterList"></div></aside><article class="panel brain-detail" id="brainDetail"></article></div>
+      </section>
+
+      <section id="notes" class="view">
+        <div class="notes-shell panel">
+          <aside class="notes-list-pane">
+            <div class="notes-tools"><input id="notesSearch" placeholder="Search personal notes"><button class="primary" id="newNote">＋</button></div>
+            <div class="locked-note-link" id="openCourseNotes"><span>🔒</span><div><b>Course Notes</b><small>Chapters 1–19 · Read only</small></div></div>
+            <div class="notes-heading"><b>Personal Notes</b><span id="notesCount">0</span></div>
+            <div id="personalNotesList"></div>
+          </aside>
+          <article class="note-editor-pane" id="noteEditorPane"><div class="note-empty"><div>📝</div><h2>Select a personal note</h2><p>Or create a new note to begin writing.</p></div></article>
+        </div>
+      </section>
+
+      <section id="work" class="view">
+        <div class="segmented"><button class="active" data-worktab="agenda">Agenda</button><button data-worktab="rentals">Rentals</button><button data-worktab="sales">Residential Sales</button><button data-worktab="commercial">Commercial</button><button data-worktab="clients">Clients</button><button data-worktab="properties">Properties</button></div>
+        <div id="workContent"></div>
+      </section>
+
+      <section id="vault" class="view">
+        <div class="vault-drop panel" id="dropZone"><div class="upload-icon">⇧</div><h2>Add files to your private vault</h2><p>Photos, PDFs, documents, audio, and video stay in this browser on this Mac.</p><label class="primary file-label">Choose files<input id="fileInput" type="file" multiple hidden></label></div>
+        <div class="panel"><div class="panel-head"><h3>Stored files</h3><input id="vaultSearch" class="small-search" placeholder="Search files"></div><div id="vaultGrid" class="vault-grid"></div></div>
+      </section>
+
+      <section id="settings" class="view">
+        <article class="panel settings"><p class="eyebrow">ZAD'S REFLASHAPP</p><h2>Version 1.4.0</h2><div class="whats-new"><h3>What’s New</h3><ul><li>Separate Rentals and Residential Sales pipelines</li><li>Transaction stages and visual progress</li><li>Before, during, and after-showing workflows</li><li>Tasks with due dates and client/property links</li><li>Improved client and property record summaries</li><li>Commercial workspace marked Coming Soon</li><li>Everything from version 1.3.1 retained</li></ul></div><h3>Desktop settings</h3><label><span>Dark appearance</span><input id="darkToggle" type="checkbox"></label><label><span>Pop-up flashcard interval</span><select id="popupInterval"><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15" selected>15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></label><button id="exportBtn">Export local data backup</button><label class="button-label">Import data backup<input id="importInput" type="file" accept="application/json" hidden></label><hr><button class="danger" id="resetBtn">Reset app data</button></article>
+      </section>
+    </main>
+  </div>
+  <dialog id="studyDialog"><button class="close" id="closeStudy">×</button><div class="study-meta" id="studyMeta"></div><div class="study-card" id="studyCard"><div class="face front"><small>QUESTION</small><h2 id="studyQuestion"></h2><p>Click card to reveal answer</p></div><div class="face back"><small>ANSWER</small><div id="studyAnswer"></div></div></div><div class="study-controls"><button id="prevCard">← Previous</button><button id="favoriteCard">☆ Favorite</button><button id="practiceCard">Need Practice</button><button class="primary" id="masterCard">Know It</button><button id="nextCard">Next →</button></div></dialog>
+  <dialog id="formDialog"><form method="dialog" id="entityForm"><button class="close" value="cancel">×</button><h2 id="formTitle">New item</h2><input name="name" placeholder="Name or title" required><input name="detail" placeholder="Email, address, or detail"><select name="type"><option>Rental</option><option>Residential Sale</option></select><textarea name="notes" placeholder="Notes"></textarea><button class="primary" value="default">Save</button></form></dialog>
+  <dialog id="dealDialog"><form id="dealForm"><button type="button" class="close" id="closeDeal">×</button><h2>New Transaction</h2><input name="title" placeholder="Transaction name or address" required><select name="type"><option value="rentals">Rental</option><option value="sales">Residential Sale</option></select><select name="clientId" id="dealClient"><option value="">No client linked</option></select><select name="propertyId" id="dealProperty"><option value="">No property linked</option></select><input name="date" type="date"><textarea name="notes" placeholder="Transaction notes"></textarea><button class="primary" type="submit">Create Transaction</button></form></dialog>
+  <dialog id="vaultPreview"><button class="close" id="closeVaultPreview">×</button><h2 id="vaultPreviewTitle">File preview</h2><div id="vaultPreviewBody"></div></dialog>
+  <script src="raw-notes.js"></script><script src="data.js"></script><script src="app.js"></script>
+  <script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}));}</script>
+</body>
+</html>
