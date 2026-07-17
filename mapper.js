@@ -66,9 +66,8 @@
 
   function renderList(){
     const pins=filteredPins(); $('#mapperPinCount').textContent=pins.length;
-    $('#mapperLocationList').innerHTML=pins.length?pins.map(p=>`<div class="mapper-location ${selectedId===p.id?'active':''}" data-map-id="${escM(p.id)}"><div class="mapper-location-top"><h4>${escM(p.title)}</h4><span>${Number.isFinite(Number(p.lat))?'📍':'○'}</span></div><p>${escM(p.address||'No address')}</p><div class="mapper-badges"><span class="mapper-badge">${escM(p.type)}</span><span class="mapper-badge">${escM(p.status)}</span>${p.client?`<span class="mapper-badge">${escM(p.client)}</span>`:''}</div><div class="mapper-location-actions"><button data-map-select="${escM(p.id)}">View</button><button data-map-route="${escM(p.id)}">Add to route</button><button data-map-visit="${escM(p.id)}">Check in</button><button data-map-edit="${escM(p.id)}">Edit</button><button data-map-delete="${escM(p.id)}">Delete</button></div></div>`).join(''):'<div class="mapper-empty">No matching locations. Add a pin or widen the radius.</div>';
+    $('#mapperLocationList').innerHTML=pins.length?pins.map(p=>`<div class="mapper-location ${selectedId===p.id?'active':''}" data-map-id="${escM(p.id)}"><div class="mapper-location-top"><h4>${escM(p.title)}</h4><span>${Number.isFinite(Number(p.lat))?'📍':'○'}</span></div><p>${escM(p.address||'No address')}</p><div class="mapper-badges"><span class="mapper-badge">${escM(p.type)}</span><span class="mapper-badge">${escM(p.status)}</span>${p.asking?`<span class="mapper-badge">${escM(p.asking)}</span>`:''}${p.client?`<span class="mapper-badge">${escM(p.client)}</span>`:''}</div><div class="mapper-location-actions"><button data-map-select="${escM(p.id)}">View details</button><button data-map-visit="${escM(p.id)}">Mark visited</button><button data-map-edit="${escM(p.id)}">Edit</button><button data-map-delete="${escM(p.id)}">Delete</button></div></div>`).join(''):'<div class="mapper-empty">No matching inventory. Add a property pin or widen the radius.</div>';
     $$('[data-map-select]').forEach(b=>b.onclick=()=>selectPin(b.dataset.mapSelect));
-    $$('[data-map-route]').forEach(b=>b.onclick=()=>addToRoute(b.dataset.mapRoute));
     $$('[data-map-visit]').forEach(b=>b.onclick=()=>checkIn(b.dataset.mapVisit));
     $$('[data-map-edit]').forEach(b=>b.onclick=()=>openPinForm(b.dataset.mapEdit));
     $$('[data-map-delete]').forEach(b=>b.onclick=()=>deletePin(b.dataset.mapDelete));
@@ -78,6 +77,20 @@
     selectedId=id;const p=state.mapPins.find(x=>x.id===id);if(!p)return;
     if(map&&Number.isFinite(Number(p.lat))){map.setView([p.lat,p.lng],15);const m=markers.get(id);if(m)m.openPopup();}
     renderList();
+    renderPropertyDetail(p);
+  }
+
+  function renderPropertyDetail(p){
+    const box=$('#mapperPropertyDetail'); if(!box)return;
+    if(!p){box.innerHTML='<div class="mapper-empty">Select a property to view its details.</div>';return;}
+    const field=(label,value)=>value?`<div class="mapper-detail-row"><span>${escM(label)}</span><strong>${escM(value)}</strong></div>`:'';
+    box.innerHTML=`<div class="panel-head"><div><p class="eyebrow">PROPERTY RECORD</p><h3>${escM(p.title)}</h3></div><span class="mapper-badge">${escM(p.status||'active')}</span></div>
+      <p class="mapper-detail-address">${escM(p.address||'No address')}</p>
+      <div class="mapper-detail-grid">${field('Availability',p.availability||p.dealType||p.type)}${field('Asking terms',p.asking||p.price||p.rent)}${field('Property type',p.propertyType||p.type)}${field('Available space',p.space||p.squareFeet)}${field('Owner / entity',p.owner||p.ownerEntity)}${field('Management company',p.management||p.managementCompany)}${field('Listing broker',p.broker||p.listingBroker)}${field('Client / contact',p.client)}</div>
+      <div class="mapper-detail-notes"><strong>Notes</strong><p>${escM(p.notes||'No notes yet.')}</p></div>
+      <div class="mapper-location-actions"><button class="primary" data-detail-edit="${escM(p.id)}">Edit property</button><button data-detail-visit="${escM(p.id)}">Mark visited</button></div>`;
+    const e=box.querySelector('[data-detail-edit]'); if(e)e.onclick=()=>openPinForm(e.dataset.detailEdit);
+    const v=box.querySelector('[data-detail-visit]'); if(v)v.onclick=()=>checkIn(v.dataset.detailVisit);
   }
   window.reflashMapperSelect=selectPin;
 
@@ -155,11 +168,11 @@
   function amenities(){const p=selectedPin();if(!p){alert('Select a location first.');return;}window.open(`https://www.google.com/maps/search/schools+parks+transit+near+${encodeURIComponent(p.lat+','+p.lng)}`,'_blank');}
   function territory(){if(!map){return;}if(territoryLayer){territoryLayer.remove();territoryLayer=null;return;}const center=currentLocation||selectedPin();if(!center){alert('Use your location or select a pin first.');return;}territoryLayer=L.circle([center.lat,center.lng],{radius:Number($('#mapperRadius').value||10)*1609.344,color:'#8b5cf6',fillOpacity:.08}).addTo(map);map.fitBounds(territoryLayer.getBounds());}
 
-  function renderMapper(){normalizeLegacyProperties();renderList();renderMarkers();renderRoute();if(map)setTimeout(()=>map.invalidateSize(),50);}
+  function renderMapper(){normalizeLegacyProperties();renderList();renderMarkers();renderPropertyDetail(state.mapPins.find(x=>x.id===selectedId));if(map)setTimeout(()=>map.invalidateSize(),50);}
   function bind(){
-    $('#mapperLocate').onclick=locate;$('#mapperAddPin').onclick=()=>openPinForm();$('#mapperBuildRoute').onclick=optimizeRoute;$('#mapperSaveRoute').onclick=saveRoute;$('#mapperOpenNavigation').onclick=openNavigation;$('#mapperLogTrip').onclick=logTrip;$('#mapperClearRoute').onclick=()=>{state.mapRouteDraft=[];save();renderRoute()};$('#mapperExportMileage').onclick=exportMileage;
+    $('#mapperLocate').onclick=locate;$('#mapperAddPin').onclick=()=>openPinForm();
     $('#mapperSearch').oninput=renderMapper;$('#mapperFilter').onchange=renderMapper;$('#mapperStatus').onchange=renderMapper;$('#mapperRadius').onchange=()=>{state.mapSettings.radius=Number($('#mapperRadius').value||10);save();renderMapper()};
-    $('#mapperPinClose').onclick=()=>$('#mapperPinDialog').close();$('#mapperPinForm').onsubmit=savePin;$('#mapperGeocode').onclick=geocodeAddress;$('#mapperActivityClose').onclick=()=>$('#mapperActivityDialog').close();$('#mapperActivity').onclick=()=>{renderActivity();$('#mapperActivityDialog').showModal()};$('#mapperNearbyComps').onclick=nearbyComps;$('#mapperAmenities').onclick=amenities;$('#mapperTerritory').onclick=territory;
+    $('#mapperPinClose').onclick=()=>$('#mapperPinDialog').close();$('#mapperPinForm').onsubmit=savePin;$('#mapperGeocode').onclick=geocodeAddress;$('#mapperNearbyComps').onclick=nearbyComps;$('#mapperAmenities').onclick=amenities;$('#mapperTerritory').onclick=territory;
     const mapperNav=document.querySelector('[data-view="mapper"]');if(mapperNav)mapperNav.addEventListener('click',()=>setTimeout(renderMapper,80));
     $('#mapperRadius').value=state.mapSettings.radius||10;
   }
