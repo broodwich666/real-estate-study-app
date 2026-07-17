@@ -13,6 +13,34 @@
   Object.entries(mapperDefaults).forEach(([k,v])=>{ if (!Array.isArray(v) && typeof v==='object') state[k]={...v,...(state[k]||{})}; else if (!Array.isArray(state[k])) state[k]=Array.isArray(v)?[...v]:v; });
   let map=null,markers=new Map(),userMarker=null,territoryLayer=null,currentLocation=null,editingId=null,selectedId=null;
 
+
+  function importInventoryPins(records){
+    let added=0,updated=0;
+    (records||[]).forEach(r=>{
+      let pin=state.mapPins.find(p=>p.inventoryId===r.inventoryId || (p.address||'').toLowerCase()===(r.address||'').toLowerCase());
+      if(pin){Object.assign(pin,r);updated++;}
+      else{state.mapPins.push({...r,id:'inventory-'+(r.inventoryId||Date.now()+'-'+added),lat:null,lng:null,createdAt:new Date().toISOString()});added++;}
+    });
+    save();renderMapper();geocodeMissingInventory();
+    return {added,updated};
+  }
+  async function geocodeMissingInventory(){
+    const pending=state.mapPins.filter(p=>p.address&&(!Number.isFinite(Number(p.lat))||!Number.isFinite(Number(p.lng)))).slice(0,18);
+    if(!pending.length)return;
+    const status=$('#mapperPinCount');
+    for(let i=0;i<pending.length;i++){
+      const p=pending[i];
+      try{
+        if(status)status.textContent=`Geocoding ${i+1}/${pending.length}`;
+        const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=${encodeURIComponent(p.address)}`,{headers:{'Accept':'application/json'}});
+        const d=await r.json();
+        if(d&&d[0]){p.lat=Number(d[0].lat);p.lng=Number(d[0].lon);p.geocodedAt=new Date().toISOString();save();renderMarkers();}
+      }catch(e){}
+      await new Promise(res=>setTimeout(res,1100));
+    }
+    renderMapper();
+  }
+
   function normalizeLegacyProperties(){
     if (!Array.isArray(state.properties)) return;
     state.properties.forEach((p,i)=>{
@@ -170,11 +198,11 @@
 
   function renderMapper(){normalizeLegacyProperties();renderList();renderMarkers();renderPropertyDetail(state.mapPins.find(x=>x.id===selectedId));if(map)setTimeout(()=>map.invalidateSize(),50);}
   function bind(){
-    $('#mapperLocate').onclick=locate;$('#mapperAddPin').onclick=()=>openPinForm();
+    $('#mapperImportInventory').onclick=()=>{const raw=localStorage.getItem('reflash_ny_inventory_v1');const records=raw?JSON.parse(raw):[];const mapped=records.map(x=>({inventoryId:x.id,title:x.address,address:x.address,type:x.deal==='For Lease'?'Rental':'Residential Sale',status:'active',availability:x.deal,asking:x.price,propertyType:x.type,space:x.space,owner:x.owner,management:x.management,broker:x.broker,sourceUrl:x.sourceUrl,notes:x.notes||''}));const r=importInventoryPins(mapped);alert(`${r.added} inventory pins added, ${r.updated} refreshed.`);};$('#mapperLocate').onclick=locate;$('#mapperAddPin').onclick=()=>openPinForm();
     $('#mapperSearch').oninput=renderMapper;$('#mapperFilter').onchange=renderMapper;$('#mapperStatus').onchange=renderMapper;$('#mapperRadius').onchange=()=>{state.mapSettings.radius=Number($('#mapperRadius').value||10);save();renderMapper()};
     $('#mapperPinClose').onclick=()=>$('#mapperPinDialog').close();$('#mapperPinForm').onsubmit=savePin;$('#mapperGeocode').onclick=geocodeAddress;$('#mapperNearbyComps').onclick=nearbyComps;$('#mapperAmenities').onclick=amenities;$('#mapperTerritory').onclick=territory;
     const mapperNav=document.querySelector('[data-view="mapper"]');if(mapperNav)mapperNav.addEventListener('click',()=>setTimeout(renderMapper,80));
     $('#mapperRadius').value=state.mapSettings.radius||10;
   }
-  window.addEventListener('DOMContentLoaded',()=>{bind();normalizeLegacyProperties();save();});
+  window.addEventListener('reflash:inventory-map',e=>importInventoryPins(e.detail));window.addEventListener('DOMContentLoaded',()=>{bind();normalizeLegacyProperties();save();setTimeout(()=>{if(document.querySelector('#mapper.view.active'))geocodeMissingInventory();},1200);});
 })();

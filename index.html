@@ -3,15 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Zad's REFLASHAPP 1.9.0</title>
+  <title>Zad's REFLASHAPP 2.0.0</title>
   <meta name="theme-color" content="#17191e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="REFLASHAPP">
   <link rel="apple-touch-icon" href="icon-180.png">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="styles.css?v=1900"><link rel="stylesheet" href="inventory.css?v=1900"><link rel="stylesheet" href="raw-notes.css?v=1900"><link rel="stylesheet" href="v1-2.css?v=1900"><link rel="stylesheet" href="v1-3.css?v=1900"><link rel="stylesheet" href="v1-4.css?v=1900"><link rel="stylesheet" href="cloud-sync.css?v=1900"><link rel="stylesheet" href="vault-cloud.css?v=1900"><link rel="stylesheet" href="mapper.css?v=1900">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="styles.css?v=2000"><link rel="stylesheet" href="inventory.css?v=2000"><link rel="stylesheet" href="raw-notes.css?v=2000"><link rel="stylesheet" href="v1-2.css?v=2000"><link rel="stylesheet" href="v1-3.css?v=2000"><link rel="stylesheet" href="v1-4.css?v=2000"><link rel="stylesheet" href="cloud-sync.css?v=2000"><link rel="stylesheet" href="vault-cloud.css?v=2000"><link rel="stylesheet" href="mapper.css?v=2000"><link rel="stylesheet" href="theme-v2.css?v=2000">
 </head>
 <body>
+  <div class="app-masthead">
+    <div class="mast-brand"><div class="mast-logo">R</div><div><strong>REFLASHAPP</strong><small>REAL ESTATE HQ</small></div></div>
+    <div class="mast-version"><span>VERSION 2.0.0</span><b>✓ Updated</b></div>
+    <div class="mast-layout"><span>Switch Layout:</span></div>
+    <div class="mast-tools"><button title="Search">⌕<small>Search</small></button><button title="Notifications">♧<small>Notifications</small></button><div class="mast-user">Z</div></div>
+  </div>
   <div class="layout-switcher" role="tablist" aria-label="Layout preview">
     <button class="active" data-layout-mode="desktop">Desktop / Web</button>
     <button data-layout-mode="iphone">iPhone Optimized</button>
@@ -19,7 +25,7 @@
   </div>
   <div class="shell">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">ZR</div><div><strong>Zad's REFLASHAPP</strong><small>Version 1.9.0</small></div></div>
+      <div class="brand"><div class="logo">ZR</div><div><strong>Zad's REFLASHAPP</strong><small>Version 2.0.0</small></div></div>
       <nav id="nav">
         <button data-view="dashboard" class="active">⌂ <span>Dashboard</span></button>
         <button data-view="brain">🧠 <span>Brain</span></button>
@@ -35,7 +41,7 @@
     <main>
       <header><div><p class="eyebrow" id="eyebrow">OVERVIEW</p><h1 id="pageTitle">Dashboard</h1></div><div class="header-actions"><span id="saveState">Saved locally</span><button class="icon-btn" id="themeBtn" title="Toggle theme">◐</button></div></header>
       <section id="dashboard" class="view active">
-        <div class="hero"><div><div class="version-pill">REFLASHAPP 1.9.0</div><p>Welcome back, Zad</p><h2>Your study brain and real estate workspace, together.</h2></div><button class="primary" data-jump="brain">Continue studying →</button></div>
+        <div class="hero"><div><div class="version-pill">REFLASHAPP 2.0.0</div><p>Welcome back, Zad</p><h2>Your study brain and real estate workspace, together.</h2></div><button class="primary" data-jump="brain">Continue studying →</button></div>
         <div class="stats"><article><span>Study progress</span><strong id="overallProgress">0%</strong><small id="masteredCount">0 cards mastered</small></article><article><span>Open work tasks</span><strong id="taskCount">0</strong><small>Across rentals and sales</small></article><article><span>Vault items</span><strong id="vaultCount">0</strong><small>Synced with Google Drive when connected</small></article></div>
         <div class="two-col"><article class="panel"><div class="panel-head"><h3>Today's agenda</h3><button class="text-btn" data-jump="work">Open Work</button></div><div id="agendaPreview" class="list empty">No tasks yet.</div></article><article class="panel"><div class="panel-head"><h3>Quick study</h3><button class="text-btn" id="quickStudy">Shuffle all</button></div><div id="quickCard" class="mini-card">Choose “Shuffle all” for a flashcard.</div></article></div>
       </section>
@@ -65,9 +71,9 @@
       <section id="inventory" class="view">
         <div class="inventory-hero panel">
           <div><p class="eyebrow">LIVE PROSPECTING WORKSPACE</p><h2>New York Inventory + Ownership Research</h2><p>Starter inventory for Bushwick/Brooklyn. Verify availability, pricing, ownership, and agency status before contacting or advertising.</p></div>
-          <div class="inventory-actions"><button class="primary" id="inventoryAdd">+ Add Property</button><button id="inventoryExport">Export CSV</button><label class="button-label">Import CSV<input id="inventoryImport" type="file" accept=".csv,text/csv" hidden></label></div>
+          <div class="inventory-actions"><button class="primary" id="inventoryRefreshPublic">↻ Refresh Public Snapshot</button><button id="inventoryMapAll">Map Inventory</button><button id="inventoryAdd">+ Add Property</button><button id="inventoryExport">Export CSV</button><label class="button-label">Import CSV<input id="inventoryImport" type="file" accept=".csv,text/csv" hidden></label></div>
         </div>
-        <div class="inventory-stats" id="inventoryStats"></div>
+        <div class="public-snapshot-bar"><div><strong>Public-source snapshot</strong><span id="publicSnapshotStatus">Loaded from verified public listing pages · checked July 17, 2026</span></div><button id="publicSourceInfo">Sources & verification</button></div><div class="inventory-stats" id="inventoryStats"></div>
         <div class="inventory-toolbar panel">
           <input id="inventorySearch" placeholder="Search address, owner, broker, property type…">
           <select id="inventoryDealFilter"><option value="all">Lease + Sale</option><option value="For Lease">For Lease</option><option value="For Sale">For Sale</option></select>
@@ -81,11 +87,11 @@
       </section>
 
       <section id="mapper" class="view">
-        <div class="mapper-purpose panel"><div><p class="eyebrow">PROPERTY AVAILABILITY MAP</p><h2>Available Inventory on the Map</h2><p>This map is for seeing available properties, listings, owners, management information, and local inventory—not driving directions.</p></div><span class="version-pill">Map Module 1.0</span></div>
+        <div class="mapper-purpose panel"><div><p class="eyebrow">PROPERTY AVAILABILITY MAP</p><h2>Available Inventory on the Map</h2><p>This map is for seeing available properties, listings, owners, management information, and local inventory—not driving directions.</p></div><span class="version-pill">Map Module 2.0</span></div>
         <div class="mapper-mobile-tabs" role="tablist"><button class="active" data-map-pane="map">Map</button><button data-map-pane="list">List</button><button data-map-pane="filters">Filters</button></div>
         <div class="mapper-toolbar panel" data-map-pane-content="filters">
           <div class="mapper-toolbar-row">
-            <button class="primary" id="mapperLocate">◎ Use My Location</button>
+            <button class="primary" id="mapperImportInventory">▤ Load Inventory Pins</button><button id="mapperLocate">◎ Use My Location</button>
             <button id="mapperAddPin">＋ Add Property Pin</button>
             <button id="mapperNearbyComps">Nearby comps</button>
             <button id="mapperAmenities">Schools & amenities</button>
@@ -119,7 +125,7 @@
       </section>
 
       <section id="settings" class="view">
-        <article class="panel settings"><p class="eyebrow">ZAD'S REFLASHAPP</p><h2>Version 1.9.0</h2><div class="whats-new"><h3>What’s New</h3><ul><li>Separate Rentals and Residential Sales pipelines</li><li>Transaction stages and visual progress</li><li>Before, during, and after-showing workflows</li><li>Tasks with due dates and client/property links</li><li>Improved client and property record summaries</li><li>Commercial workspace marked Coming Soon</li><li>Everything from version 1.3.1 retained</li></ul></div><h3>Desktop settings</h3><label><span>Dark appearance</span><input id="darkToggle" type="checkbox"></label><label><span>Pop-up flashcard interval</span><select id="popupInterval"><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15" selected>15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></label><button id="exportBtn">Export local data backup</button><label class="button-label">Import data backup<input id="importInput" type="file" accept="application/json" hidden></label><hr><button class="danger" id="resetBtn">Reset app data</button></article>
+        <article class="panel settings"><p class="eyebrow">ZAD'S REFLASHAPP</p><h2>Version 2.0.0</h2><div class="whats-new"><h3>What’s New in 2.0.0</h3><ul><li>Interface redesigned to match the approved REFLASHAPP desktop/iPhone mockup</li><li>Public Bushwick/Brooklyn inventory snapshot with source and verification dates</li><li>One-click inventory-to-map import and gradual address geocoding</li><li>Mapper refocused on available inventory rather than driving directions</li><li>Separate Rentals and Residential Sales pipelines</li><li>Transaction stages and visual progress</li><li>Before, during, and after-showing workflows</li><li>Tasks with due dates and client/property links</li><li>Improved client and property record summaries</li><li>Commercial workspace marked Coming Soon</li><li>Everything from version 1.3.1 retained</li></ul></div><h3>Desktop settings</h3><label><span>Dark appearance</span><input id="darkToggle" type="checkbox"></label><label><span>Pop-up flashcard interval</span><select id="popupInterval"><option value="5">5 minutes</option><option value="10">10 minutes</option><option value="15" selected>15 minutes</option><option value="30">30 minutes</option><option value="60">60 minutes</option></select></label><button id="exportBtn">Export local data backup</button><label class="button-label">Import data backup<input id="importInput" type="file" accept="application/json" hidden></label><hr><button class="danger" id="resetBtn">Reset app data</button></article>
       </section>
     </main>
   </div>
@@ -131,7 +137,7 @@
   <dialog id="mapperPinDialog"><form id="mapperPinForm"><button type="button" class="close" id="mapperPinClose">×</button><h2 id="mapperPinTitle">Add map location</h2><input name="title" placeholder="Property, client, or location name" required><input name="address" placeholder="Street address"><div class="mapper-coordinate-row"><input name="lat" type="number" step="any" placeholder="Latitude"><input name="lng" type="number" step="any" placeholder="Longitude"></div><select name="type"><option>Rental</option><option>Residential Sale</option><option>Lead</option><option>Client</option><option>Open House</option><option>Other</option></select><select name="status"><option value="active">Active</option><option value="visited">Visited</option><option value="completed">Completed</option><option value="unavailable">Unavailable</option></select><input name="client" placeholder="Client name"><input name="appointment" type="datetime-local"><textarea name="notes" placeholder="Showing notes, access details, or follow-up"></textarea><div class="mapper-form-actions"><button type="button" id="mapperGeocode">Find coordinates from address</button><button class="primary" type="submit">Save location</button></div></form></dialog>
   <dialog id="mapperActivityDialog"><button class="close" id="mapperActivityClose">×</button><h2>Mapper activity and mileage</h2><div id="mapperActivityBody"></div></dialog>
   <dialog id="vaultPreview"><button class="close" id="closeVaultPreview">×</button><h2 id="vaultPreviewTitle">File preview</h2><div id="vaultPreviewBody"></div></dialog>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><script src="raw-notes.js?v=1900"></script><script src="data.js?v=1900"></script><script src="app.js?v=1900"></script><script src="inventory.js?v=1900"></script><script src="mapper.js?v=1900"></script><script src="cloud-sync.js?v=1900"></script><script src="vault-cloud.js?v=1900"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><script src="public-inventory.js?v=2000"></script><script src="raw-notes.js?v=2000"></script><script src="data.js?v=2000"></script><script src="app.js?v=2000"></script><script src="inventory.js?v=2000"></script><script src="mapper.js?v=2000"></script><script src="cloud-sync.js?v=2000"></script><script src="vault-cloud.js?v=2000"></script>
   <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.getRegistrations().then(registrations => registrations.forEach(r => r.unregister()));
